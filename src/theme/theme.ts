@@ -1,12 +1,23 @@
 import { createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
-  interface PaletteColor {
-    lighter?: string;
-  }
   interface TypeBackground {
     light: string;
     darker: string;
+  }
+
+  interface Palette {
+    icons: {
+      robot: string;
+      obstacle: string;
+    };
+  }
+
+  interface PaletteOptions {
+    icons?: {
+      robot: string;
+      obstacle: string;
+    };
   }
 }
 
@@ -55,6 +66,10 @@ export const colors = {
     light: '#03a9f4',
     dark: '#01579b',
   },
+  icons: {
+    robot: '#42a5f5',
+    obstacle: '#66bb6a',
+  },
 };
 
 const theme = createTheme({
@@ -69,6 +84,7 @@ const theme = createTheme({
     error: colors.error,
     warning: colors.warning,
     info: colors.info,
+    icons: colors.icons,
   },
   typography: {
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
