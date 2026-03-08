@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Box } from '@mui/material';
-import { initScene } from './scene/setup';
-import { UserPanel } from './components/UserPanel';
+import { initScene } from './features/scene/setup';
+import { UserPanel } from './features/entities/components/UserPanel';
 
 function App() {
   const containerRef = useRef<HTMLDivElement>(null);
