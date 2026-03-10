@@ -14,6 +14,11 @@ export interface Robot {
   __v: number;
 }
 
+export type RobotWritableFields = Omit<
+  Robot,
+  '_id' | 'createdAt' | 'updatedAt' | '__v'
+>;
+
 export interface Obstacle {
   _id: string;
   name: string;
@@ -24,6 +29,11 @@ export interface Obstacle {
   updatedAt: string;
   __v: number;
 }
+
+export type ObstacleWritableFields = Omit<
+  Obstacle,
+  '_id' | 'createdAt' | 'updatedAt' | '__v'
+>;
 
 export interface EntityItemProps {
   entity: Robot | Obstacle;
@@ -37,4 +47,19 @@ export interface EntitySectionProps {
   onToggle: () => void;
   icon: ReactNode;
   markerColor: string;
+}
+
+// State types
+export interface RobotsState {
+  items: Robot[];
+  selectedId: string | null;
+  loading: boolean;
+  error: string | null;
+}
+
+export interface ObstaclesState {
+  items: Obstacle[];
+  selectedId: string | null;
+  loading: boolean;
+  error: string | null;
 }
