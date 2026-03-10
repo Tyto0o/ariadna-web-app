@@ -1,20 +1,21 @@
-import { useState } from 'react';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import CategoryIcon from '@mui/icons-material/Category';
 import { useTheme } from '@mui/material/styles';
-import { Obstacle, Robot } from '../types/entities.types';
+import { useEntityPanelState } from '../hooks/useEntityPanelState';
 import { EntitySection } from './EntitySection';
 
 export const UserPanel = () => {
   const theme = useTheme();
-
-  const [robotsOpen, setRobotsOpen] = useState(false);
-  const [obstaclesOpen, setObstaclesOpen] = useState(false);
-
-  const robots: Robot[] = [];
-  const obstacles: Obstacle[] = [];
+  const {
+    robots,
+    obstacles,
+    robotsOpen,
+    obstaclesOpen,
+    toggleRobots,
+    toggleObstacles,
+  } = useEntityPanelState();
 
   return (
     <List
@@ -42,7 +43,7 @@ export const UserPanel = () => {
         title="Robots"
         entities={robots}
         isOpen={robotsOpen}
-        onToggle={() => setRobotsOpen((prev) => !prev)}
+        onToggle={toggleRobots}
         icon={<SmartToyIcon sx={{ color: theme.palette.icons.robot }} />}
         markerColor={theme.palette.info.light}
       />
@@ -51,7 +52,7 @@ export const UserPanel = () => {
         title="Obstacles"
         entities={obstacles}
         isOpen={obstaclesOpen}
-        onToggle={() => setObstaclesOpen((prev) => !prev)}
+        onToggle={toggleObstacles}
         icon={<CategoryIcon sx={{ color: theme.palette.icons.obstacle }} />}
         markerColor={theme.palette.success.light}
       />

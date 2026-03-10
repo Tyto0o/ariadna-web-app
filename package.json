@@ -18,9 +18,11 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
+    "@reduxjs/toolkit": "^2.11.2",
     "axios": "^1.13.6",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-redux": "^9.2.0",
     "three": "^0.182.0"
   },
   "devDependencies": {
