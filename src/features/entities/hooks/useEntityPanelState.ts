@@ -1,16 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../../../hooks';
+import { useState } from 'react';
+import { useAppSelector } from '../../../hooks';
 import {
   selectRobots,
   selectObstacles,
   selectRobotsLoading,
   selectObstaclesLoading,
 } from '../selectors/entitiesSelectors';
-import { fetchRobots } from '../thunks/robotsThunks';
-import { fetchObstacles } from '../thunks/obstaclesThunks';
 
 export const useEntityPanelState = () => {
-  const dispatch = useAppDispatch();
   const [robotsOpen, setRobotsOpen] = useState(false);
   const [obstaclesOpen, setObstaclesOpen] = useState(false);
 
@@ -18,11 +15,6 @@ export const useEntityPanelState = () => {
   const obstacles = useAppSelector(selectObstacles);
   const robotsLoading = useAppSelector(selectRobotsLoading);
   const obstaclesLoading = useAppSelector(selectObstaclesLoading);
-
-  useEffect(() => {
-    dispatch(fetchRobots());
-    dispatch(fetchObstacles());
-  }, [dispatch]);
 
   return {
     robots,
