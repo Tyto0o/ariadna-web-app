@@ -18,6 +18,14 @@ import {
   RENDERER_ENABLE_ANTIALIAS,
   SCENE_BACKGROUND_COLOR,
 } from './constants';
+import { Obstacle, Robot } from '../entities/types/entities.types';
+import { createSceneEntities } from './entities';
+
+interface SceneRuntime {
+  syncRobots: (robots: Robot[]) => void;
+  syncObstacles: (obstacles: Obstacle[]) => void;
+  dispose: () => void;
+}
 
 const createScene = (): THREE.Scene => {
   const scene: THREE.Scene = new THREE.Scene();
@@ -115,7 +123,7 @@ const createGroundPlane = (maxSize: number): THREE.Mesh => {
   return plane;
 };
 
-export const initScene = (container: HTMLElement): (() => void) => {
+export const initScene = (container: HTMLElement): SceneRuntime => {
   // Set global coordinate system to Z-up for all Three.js objects
   THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
@@ -123,6 +131,7 @@ export const initScene = (container: HTMLElement): (() => void) => {
   const camera: THREE.PerspectiveCamera = createCamera(container);
   const renderer: THREE.WebGLRenderer = createRenderer(container);
   const controls: OrbitControls = createControls(camera, renderer);
+  const entities = createSceneEntities(scene);
 
   scene.add(createGrid(GRID_SIZE, GRID_CELL));
   scene.add(createGroundPlane(GRID_SIZE));
@@ -145,11 +154,28 @@ export const initScene = (container: HTMLElement): (() => void) => {
 
   window.addEventListener('resize', handleResize);
 
-  return () => {
+  const syncRobots = (robots: Robot[]): void => {
+    entities.syncRobots(robots);
+  };
+
+  const syncObstacles = (obstacles: Obstacle[]): void => {
+    entities.syncObstacles(obstacles);
+  };
+
+  const dispose = (): void => {
+    entities.dispose();
     window.removeEventListener('resize', handleResize);
     cancelAnimationFrame(animationId);
     controls.dispose();
     renderer.dispose();
-    container.removeChild(renderer.domElement);
+    if (renderer.domElement.parentElement === container) {
+      container.removeChild(renderer.domElement);
+    }
+  };
+
+  return {
+    syncRobots,
+    syncObstacles,
+    dispose,
   };
 };
