@@ -20,10 +20,20 @@ import {
 } from './constants';
 import { Obstacle, Robot } from '../entities/types/entities.types';
 import { createSceneEntities } from './entities';
+import { createTargetCrosshairController } from './crosshair';
+import { createScenePath } from './path';
+import { createCamera } from './camera';
+import { createTargetSelectionCameraController } from './targetSelectionCamera';
+
+interface SceneEventHandlers {
+  onGroundClick?: (position: { x: number; y: number }) => void;
+}
 
 interface SceneRuntime {
   syncRobots: (robots: Robot[]) => void;
   syncObstacles: (obstacles: Obstacle[]) => void;
+  syncPath: (path: { x: number; y: number }[]) => void;
+  setTargetPreviewEnabled: (enabled: boolean) => void;
   dispose: () => void;
 }
 
@@ -32,31 +42,6 @@ const createScene = (): THREE.Scene => {
   scene.background = new THREE.Color(SCENE_BACKGROUND_COLOR);
   scene.fog = null;
   return scene;
-};
-
-const createCamera = (container: HTMLElement): THREE.PerspectiveCamera => {
-  const aspect: number = container.clientWidth / container.clientHeight;
-
-  const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(
-    CAMERA_FOV,
-    aspect,
-    CAMERA_NEAR_PLANE,
-    CAMERA_FAR_PLANE
-  );
-
-  camera.position.set(
-    CAMERA_DEFAULT_POSITION.x,
-    CAMERA_DEFAULT_POSITION.y,
-    CAMERA_DEFAULT_POSITION.z
-  );
-
-  camera.lookAt(
-    DEFAULT_CAMERA_TARGET.x,
-    DEFAULT_CAMERA_TARGET.y,
-    DEFAULT_CAMERA_TARGET.z
-  );
-
-  return camera;
 };
 
 const createRenderer = (container: HTMLElement): THREE.WebGLRenderer => {
@@ -123,18 +108,46 @@ const createGroundPlane = (maxSize: number): THREE.Mesh => {
   return plane;
 };
 
-export const initScene = (container: HTMLElement): SceneRuntime => {
+export const initScene = (
+  container: HTMLElement,
+  eventHandlers?: SceneEventHandlers
+): SceneRuntime => {
   // Set global coordinate system to Z-up for all Three.js objects
   THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
   const scene: THREE.Scene = createScene();
-  const camera: THREE.PerspectiveCamera = createCamera(container);
+  const camera: THREE.PerspectiveCamera = createCamera({
+    container,
+    fov: CAMERA_FOV,
+    near: CAMERA_NEAR_PLANE,
+    far: CAMERA_FAR_PLANE,
+    position: CAMERA_DEFAULT_POSITION,
+    lookAt: DEFAULT_CAMERA_TARGET,
+  });
+
   const renderer: THREE.WebGLRenderer = createRenderer(container);
   const controls: OrbitControls = createControls(camera, renderer);
   const entities = createSceneEntities(scene);
+  const scenePath = createScenePath(scene);
+  const grid = createGrid(GRID_SIZE, GRID_CELL);
+  const groundPlane = createGroundPlane(GRID_SIZE);
 
-  scene.add(createGrid(GRID_SIZE, GRID_CELL));
-  scene.add(createGroundPlane(GRID_SIZE));
+  scene.add(grid);
+  scene.add(groundPlane);
+
+  const targetCrosshair = createTargetCrosshairController({
+    scene,
+    camera,
+    domElement: renderer.domElement,
+    groundPlane,
+  });
+
+  const targetSelectionCamera = createTargetSelectionCameraController({
+    camera,
+    controls,
+    minDistance: CONTROLS_MIN_DISTANCE,
+    defaultTarget: DEFAULT_CAMERA_TARGET,
+  });
 
   container.appendChild(renderer.domElement);
 
@@ -162,9 +175,40 @@ export const initScene = (container: HTMLElement): SceneRuntime => {
     entities.syncObstacles(obstacles);
   };
 
+  const syncPath = (path: { x: number; y: number }[]): void => {
+    scenePath.syncPath(path);
+  };
+
+  const handleClick = (event: MouseEvent): void => {
+    if (event.button !== 0 || !eventHandlers?.onGroundClick) {
+      return;
+    }
+
+    const groundPoint = targetCrosshair.getGroundPointFromMouseEvent(event);
+
+    if (!groundPoint) {
+      return;
+    }
+
+    eventHandlers.onGroundClick({
+      x: Math.round(groundPoint.x),
+      y: Math.round(groundPoint.y),
+    });
+  };
+
+  const setTargetPreviewEnabled = (enabled: boolean): void => {
+    targetCrosshair.setEnabled(enabled);
+    targetSelectionCamera.setEnabled(enabled);
+  };
+
+  renderer.domElement.addEventListener('click', handleClick);
+
   const dispose = (): void => {
     entities.dispose();
+    scenePath.dispose();
+    targetCrosshair.dispose();
     window.removeEventListener('resize', handleResize);
+    renderer.domElement.removeEventListener('click', handleClick);
     cancelAnimationFrame(animationId);
     controls.dispose();
     renderer.dispose();
@@ -176,6 +220,8 @@ export const initScene = (container: HTMLElement): SceneRuntime => {
   return {
     syncRobots,
     syncObstacles,
+    syncPath,
+    setTargetPreviewEnabled,
     dispose,
   };
 };

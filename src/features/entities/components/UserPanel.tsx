@@ -5,16 +5,27 @@ import CategoryIcon from '@mui/icons-material/Category';
 import { useTheme } from '@mui/material/styles';
 import { useEntityPanelState } from '../hooks/useEntityPanelState';
 import { EntitySection } from './EntitySection';
+import { RobotDestinationAction } from './RobotDestinationAction';
 
-export const UserPanel = () => {
+interface UserPanelProps {
+  robotPathLoading: boolean;
+  onStartTargetSelectionForRobot: (robotId: string) => void;
+}
+
+export const UserPanel = ({
+  robotPathLoading,
+  onStartTargetSelectionForRobot,
+}: UserPanelProps) => {
   const theme = useTheme();
   const {
     robots,
     obstacles,
+    selectedRobotId,
     robotsOpen,
     obstaclesOpen,
     toggleRobots,
     toggleObstacles,
+    selectRobotById,
   } = useEntityPanelState();
 
   return (
@@ -44,6 +55,15 @@ export const UserPanel = () => {
         entities={robots}
         isOpen={robotsOpen}
         onToggle={toggleRobots}
+        selectedId={selectedRobotId}
+        onSelect={selectRobotById}
+        renderItemAction={(entity) => (
+          <RobotDestinationAction
+            robotId={entity._id}
+            disabled={robotPathLoading}
+            onStartTargetSelectionForRobot={onStartTargetSelectionForRobot}
+          />
+        )}
         icon={<SmartToyIcon sx={{ color: theme.palette.icons.robot }} />}
         markerColor={theme.palette.info.light}
       />
@@ -53,6 +73,7 @@ export const UserPanel = () => {
         entities={obstacles}
         isOpen={obstaclesOpen}
         onToggle={toggleObstacles}
+        selectedId={null}
         icon={<CategoryIcon sx={{ color: theme.palette.icons.obstacle }} />}
         markerColor={theme.palette.success.light}
       />

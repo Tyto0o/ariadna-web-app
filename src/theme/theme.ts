@@ -70,6 +70,17 @@ export const colors = {
     robot: '#42a5f5',
     obstacle: '#66bb6a',
   },
+  scene: {
+    gridPrimary: '#000',
+    gridSecondary: '#999',
+    background: '#fff',
+    groundPlane: '#fff',
+    path: '#0697b1',
+    pathDots: '#0697b1',
+    robot: '#4dabf5',
+    obstacle: '#7cc37c',
+    targetPreview: '#636061',
+  },
 };
 
 const theme = createTheme({

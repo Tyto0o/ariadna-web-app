@@ -1,9 +1,11 @@
 import * as THREE from 'three';
 import { Obstacle, Robot } from '../entities/types/entities.types';
+import { colors } from '../../theme/theme';
 
 const ROBOT_HEIGHT = 80;
 const ROBOT_RADIUS_BOTTOM = 50;
 const ROBOT_RADIUS_TOP = 0;
+
 const OBSTACLE_HEIGHT = 200;
 
 interface SceneEntitiesRuntime {
@@ -60,7 +62,7 @@ const createRobotMesh = (): THREE.Mesh => {
   );
 
   geometry.rotateX(Math.PI / 2);
-  const material = new THREE.MeshBasicMaterial({ color: '#4dabf5' });
+  const material = new THREE.MeshBasicMaterial({ color: colors.scene.robot });
   return new THREE.Mesh(geometry, material);
 };
 
@@ -70,7 +72,9 @@ const createObstacleMesh = (obstacle: Obstacle): THREE.Mesh => {
     obstacle.length,
     OBSTACLE_HEIGHT
   );
-  const material = new THREE.MeshBasicMaterial({ color: '#7cc37c' });
+  const material = new THREE.MeshBasicMaterial({
+    color: colors.scene.obstacle,
+  });
   return new THREE.Mesh(geometry, material);
 };
 
