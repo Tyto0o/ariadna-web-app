@@ -5,6 +5,15 @@ export interface Position {
   y: number;
 }
 
+export interface RobotPathRequest {
+  robotId: string;
+  target: Position;
+}
+
+export interface RobotPathResponse {
+  path: Position[];
+}
+
 export interface Robot {
   _id: string;
   name: string;
@@ -38,6 +47,9 @@ export type ObstacleWritableFields = Omit<
 export interface EntityItemProps {
   entity: Robot | Obstacle;
   markerColor: string;
+  isSelected?: boolean;
+  onClick?: () => void;
+  action?: ReactNode;
 }
 
 export interface EntitySectionProps {
@@ -45,6 +57,9 @@ export interface EntitySectionProps {
   entities: Robot[] | Obstacle[];
   isOpen: boolean;
   onToggle: () => void;
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
+  renderItemAction?: (entity: Robot | Obstacle) => ReactNode;
   icon: ReactNode;
   markerColor: string;
 }
