@@ -14,6 +14,9 @@ export const EntitySection = ({
   entities,
   isOpen,
   onToggle,
+  selectedId,
+  onSelect,
+  renderItemAction,
   icon,
   markerColor,
 }: EntitySectionProps) => {
@@ -55,6 +58,9 @@ export const EntitySection = ({
             <EntityItem
               key={entity._id}
               entity={entity}
+              isSelected={selectedId === entity._id}
+              onClick={onSelect ? () => onSelect(entity._id) : undefined}
+              action={renderItemAction ? renderItemAction(entity) : undefined}
               markerColor={markerColor}
             />
           ))}
