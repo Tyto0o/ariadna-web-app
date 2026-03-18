@@ -39,7 +39,7 @@ export const EntityItem = ({
         </ListItemIcon>
         <ListItemText
           primary={entity.name}
-          secondary={`Pos: (${entity.position.x}, ${entity.position.y})`}
+          secondary={`Pos: (${Math.round(entity.position.x)}, ${Math.round(entity.position.y)})`}
           slotProps={{
             primary: {
               fontSize: '1em',
