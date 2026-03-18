@@ -26,6 +26,20 @@ const robotsSlice = createSlice({
         state.items[index] = action.payload;
       }
     },
+    updateRobotPosition: (
+      state,
+      action: PayloadAction<{ robotId: string; x: number; y: number }>
+    ) => {
+      const robot = state.items.find(
+        (item) => item._id === action.payload.robotId
+      );
+      if (!robot) {
+        return;
+      }
+
+      robot.position.x = action.payload.x;
+      robot.position.y = action.payload.y;
+    },
     removeRobot: (state, action: PayloadAction<string>) => {
       state.items = state.items.filter((r) => r._id !== action.payload);
       if (state.selectedId === action.payload) {
@@ -52,6 +66,7 @@ export const {
   setRobots,
   addRobot,
   updateRobot,
+  updateRobotPosition,
   removeRobot,
   selectRobot,
   setLoading,

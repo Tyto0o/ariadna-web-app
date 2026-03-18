@@ -10,6 +10,7 @@ import { fetchRobots } from '../../entities/thunks/robotsThunks';
 import { fetchObstacles } from '../../entities/thunks/obstaclesThunks';
 import { selectRobot } from '../../entities/slices/robotsSlice';
 import { pathApi } from '../../entities/api/pathApi';
+import { simulationApi } from '../../entities/api/simulationApi';
 import { Position } from '../../entities/types/entities.types';
 
 interface UseSceneControllerResult {
@@ -74,7 +75,13 @@ export const useSceneController = (): UseSceneControllerResult => {
             robotId: currentRobotId,
             target,
           });
+
           setRobotPath(response.path);
+
+          await simulationApi.startSimulation({
+            robotId: currentRobotId,
+            path: response.path,
+          });
         } catch {
           setRobotPath([]);
         } finally {

@@ -8,4 +8,5 @@ export const API_ENDPOINTS = {
   ROBOTS: `${API_PREFIX}/robots`,
   OBSTACLES: `${API_PREFIX}/obstacles`,
   PATH: `${API_PREFIX}/path`,
+  SIMULATION: `${API_PREFIX}/simulation`,
 } as const;
