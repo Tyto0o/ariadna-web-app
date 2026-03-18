@@ -1,8 +1,11 @@
 import { Box } from '@mui/material';
 import { UserPanel } from './features/entities/components/UserPanel';
+import { useRobotPositionUpdates } from './features/entities/hooks/useRobotPositionUpdates';
 import { useSceneController } from './features/scene/hooks/useSceneController';
 
 function App() {
+  useRobotPositionUpdates();
+
   const { containerRef, robotPathLoading, startTargetSelectionForRobot } =
     useSceneController();
 
