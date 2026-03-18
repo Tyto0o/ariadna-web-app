@@ -2,6 +2,8 @@ export const API_BASE_URL: string = ''; // Default to empty string for relative 
 export const API_PREFIX: string = '/api';
 export const API_TIMEOUT: number = 10000;
 
+export const WS_BASE_URL: string = import.meta.env.VITE_WS_URL;
+
 export const API_ENDPOINTS = {
   ROBOTS: `${API_PREFIX}/robots`,
   OBSTACLES: `${API_PREFIX}/obstacles`,
