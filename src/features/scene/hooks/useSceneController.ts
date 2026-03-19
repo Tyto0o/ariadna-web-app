@@ -12,6 +12,7 @@ import { selectRobot } from '../../entities/slices/robotsSlice';
 import { pathApi } from '../../entities/api/pathApi';
 import { simulationApi } from '../../entities/api/simulationApi';
 import { Position } from '../../entities/types/entities.types';
+import { useSnackbar } from '../../../shared/snackbar/SnackbarProvider';
 
 interface UseSceneControllerResult {
   containerRef: RefObject<HTMLDivElement | null>;
@@ -32,6 +33,7 @@ export const useSceneController = (): UseSceneControllerResult => {
   const [targetSelectionMode, setTargetSelectionMode] = useState(false);
   const [robotPath, setRobotPath] = useState<Position[]>([]);
   const [robotPathLoading, setRobotPathLoading] = useState(false);
+  const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     selectedRobotIdRef.current = selectedRobotId;
@@ -82,8 +84,17 @@ export const useSceneController = (): UseSceneControllerResult => {
             robotId: currentRobotId,
             path: response.path,
           });
+
+          showSnackbar(
+            'Robot path generated and simulation started successfully',
+            'success'
+          );
         } catch {
           setRobotPath([]);
+          showSnackbar(
+            'Failed to generate robot path or start simulation',
+            'error'
+          );
         } finally {
           setRobotPathLoading(false);
         }
