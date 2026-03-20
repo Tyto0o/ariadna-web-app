@@ -52,14 +52,15 @@ export interface EntityItemProps {
   action?: ReactNode;
 }
 
-export interface EntitySectionProps {
+export interface EntitySectionProps<T extends Robot | Obstacle> {
   title: string;
-  entities: Robot[] | Obstacle[];
+  entities: T[];
   isOpen: boolean;
   onToggle: () => void;
   selectedId?: string | null;
   onSelect?: (id: string) => void;
-  renderItemAction?: (entity: Robot | Obstacle) => ReactNode;
+  renderItemAction?: (entity: T) => ReactNode;
+  headerAction?: ReactNode;
   icon: ReactNode;
   markerColor: string;
 }

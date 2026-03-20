@@ -2,14 +2,19 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useTheme } from '@mui/material/styles';
-import { EntitySectionProps } from '../types/entities.types';
-import { EntityItem } from './EntityItem';
+import {
+  EntitySectionProps,
+  Obstacle,
+  Robot,
+} from '../../types/entities.types';
+import { EntityItem } from '../panel/EntityItem';
 
-export const EntitySection = ({
+export const EntitySection = <T extends Robot | Obstacle>({
   title,
   entities,
   isOpen,
@@ -17,9 +22,10 @@ export const EntitySection = ({
   selectedId,
   onSelect,
   renderItemAction,
+  headerAction,
   icon,
   markerColor,
-}: EntitySectionProps) => {
+}: EntitySectionProps<T>) => {
   const theme = useTheme();
 
   return (
@@ -50,6 +56,11 @@ export const EntitySection = ({
             },
           }}
         />
+        {headerAction && (
+          <Box sx={{ mr: 0.5 }} onClick={(event) => event.stopPropagation()}>
+            {headerAction}
+          </Box>
+        )}
         {isOpen ? <ExpandLess /> : <ExpandMore />}
       </ListItemButton>
       <Collapse in={isOpen} timeout="auto" unmountOnExit>
