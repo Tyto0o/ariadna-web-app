@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import { UserPanel } from './features/entities/components/UserPanel';
+import { UserPanel } from './features/entities/components/panel/UserPanel';
 import { useRobotPositionUpdates } from './features/entities/hooks/useRobotPositionUpdates';
 import { useSceneController } from './features/scene/hooks/useSceneController';
 

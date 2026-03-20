@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
 import CircleIcon from '@mui/icons-material/Circle';
 import { useTheme } from '@mui/material/styles';
-import { EntityItemProps } from '../types/entities.types';
+import { EntityItemProps } from '../../types/entities.types';
 
 export const EntityItem = ({
   entity,
