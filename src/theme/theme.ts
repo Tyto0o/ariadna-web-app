@@ -80,6 +80,7 @@ export const colors = {
     robot: '#4dabf5',
     obstacle: '#7cc37c',
     targetPreview: '#636061',
+    textBorder: '#000000',
   },
 };
 
