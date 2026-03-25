@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { Obstacle, Robot } from '../entities/types/entities.types';
 import { colors } from '../../theme/theme';
+import { setEntityNameLabel } from './entityNameLabel';
 
 const ROBOT_HEIGHT = 80;
 const ROBOT_RADIUS_BOTTOM = 50;
 const ROBOT_RADIUS_TOP = 0;
 
 const OBSTACLE_HEIGHT = 200;
+const ENTITY_LABEL_HEIGHT_OFFSET = 45;
 
 interface SceneEntitiesRuntime {
   syncRobots: (robots: Robot[]) => void;
@@ -14,27 +16,42 @@ interface SceneEntitiesRuntime {
   dispose: () => void;
 }
 
+type SceneEntityGroup = THREE.Group;
+
 const syncEntityMap = <T extends { _id: string }>(
   scene: THREE.Scene,
-  map: Map<string, THREE.Mesh>,
+  map: Map<string, SceneEntityGroup>,
   items: T[],
-  createObject: (item: T) => THREE.Mesh,
-  updateObject: (object: THREE.Mesh, item: T) => void
+  createObject: (item: T) => SceneEntityGroup,
+  updateObject: (object: SceneEntityGroup, item: T) => void
 ): void => {
   const nextIds = new Set(items.map((item) => item._id));
 
   map.forEach((object, id) => {
     if (!nextIds.has(id)) {
       scene.remove(object);
-      if ((object as THREE.Mesh).geometry) {
-        (object as THREE.Mesh).geometry.dispose();
-      }
-      const material = (object as THREE.Mesh).material;
-      if (Array.isArray(material)) {
-        material.forEach((m) => m.dispose());
-      } else if (material) {
-        material.dispose();
-      }
+      object.traverse((node) => {
+        const meshNode = node as THREE.Mesh;
+        if (meshNode.geometry) {
+          meshNode.geometry.dispose();
+        }
+
+        const nodeMaterial = (meshNode as THREE.Mesh).material;
+        if (Array.isArray(nodeMaterial)) {
+          nodeMaterial.forEach((material) => material.dispose());
+        } else if (nodeMaterial) {
+          nodeMaterial.dispose();
+        }
+
+        const spriteNode = node as THREE.Sprite;
+        const spriteMap =
+          spriteNode.material instanceof THREE.SpriteMaterial
+            ? spriteNode.material.map
+            : null;
+        if (spriteMap) {
+          spriteMap.dispose();
+        }
+      });
       map.delete(id);
     }
   });
@@ -53,7 +70,7 @@ const syncEntityMap = <T extends { _id: string }>(
   });
 };
 
-const createRobotMesh = (): THREE.Mesh => {
+const createRobotEntity = (robot: Robot): SceneEntityGroup => {
   const geometry = new THREE.CylinderGeometry(
     ROBOT_RADIUS_BOTTOM,
     ROBOT_RADIUS_TOP,
@@ -63,10 +80,19 @@ const createRobotMesh = (): THREE.Mesh => {
 
   geometry.rotateX(Math.PI / 2);
   const material = new THREE.MeshBasicMaterial({ color: colors.scene.robot });
-  return new THREE.Mesh(geometry, material);
+  const mesh = new THREE.Mesh(geometry, material);
+  const group = new THREE.Group() as SceneEntityGroup;
+  group.add(mesh);
+  setEntityNameLabel(
+    group,
+    robot.name,
+    ROBOT_HEIGHT / 2 + ENTITY_LABEL_HEIGHT_OFFSET,
+    colors.scene.robot
+  );
+  return group;
 };
 
-const createObstacleMesh = (obstacle: Obstacle): THREE.Mesh => {
+const createObstacleEntity = (obstacle: Obstacle): SceneEntityGroup => {
   const geometry = new THREE.BoxGeometry(
     obstacle.width,
     obstacle.length,
@@ -75,26 +101,41 @@ const createObstacleMesh = (obstacle: Obstacle): THREE.Mesh => {
   const material = new THREE.MeshBasicMaterial({
     color: colors.scene.obstacle,
   });
-  return new THREE.Mesh(geometry, material);
+  const mesh = new THREE.Mesh(geometry, material);
+  const group = new THREE.Group() as SceneEntityGroup;
+  group.add(mesh);
+  setEntityNameLabel(
+    group,
+    obstacle.name,
+    OBSTACLE_HEIGHT / 2 + ENTITY_LABEL_HEIGHT_OFFSET,
+    colors.scene.obstacle
+  );
+  return group;
 };
 
 export const createSceneEntities = (
   scene: THREE.Scene
 ): SceneEntitiesRuntime => {
-  const robotObjects = new Map<string, THREE.Mesh>();
-  const obstacleObjects = new Map<string, THREE.Mesh>();
+  const robotObjects = new Map<string, SceneEntityGroup>();
+  const obstacleObjects = new Map<string, SceneEntityGroup>();
 
   const syncRobots = (robots: Robot[]): void => {
     syncEntityMap(
       scene,
       robotObjects,
       robots,
-      () => createRobotMesh(),
+      (robot) => createRobotEntity(robot),
       (object, robot) => {
         object.position.set(
           robot.position.x,
           robot.position.y,
           ROBOT_HEIGHT / 2
+        );
+        setEntityNameLabel(
+          object,
+          robot.name,
+          ROBOT_HEIGHT / 2 + ENTITY_LABEL_HEIGHT_OFFSET,
+          colors.scene.robot
         );
       }
     );
@@ -105,12 +146,18 @@ export const createSceneEntities = (
       scene,
       obstacleObjects,
       obstacles,
-      (obstacle) => createObstacleMesh(obstacle),
+      (obstacle) => createObstacleEntity(obstacle),
       (object, obstacle) => {
         object.position.set(
           obstacle.position.x,
           obstacle.position.y,
           OBSTACLE_HEIGHT / 2
+        );
+        setEntityNameLabel(
+          object,
+          obstacle.name,
+          OBSTACLE_HEIGHT / 2 + ENTITY_LABEL_HEIGHT_OFFSET,
+          colors.scene.obstacle
         );
       }
     );
