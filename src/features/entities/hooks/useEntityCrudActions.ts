@@ -1,5 +1,5 @@
 import { useAppDispatch } from '../../../hooks';
-import { useSnackbar } from '../../../shared/snackbar/SnackbarProvider';
+import { useSnackbar } from '../../../shared/snackbar/useSnackbar';
 import {
   createObstacle,
   deleteObstacle,

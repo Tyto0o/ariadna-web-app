@@ -1,7 +1,7 @@
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import { useSnackbar } from '../../../../shared/snackbar/SnackbarProvider';
+import { useSnackbar } from '../../../../shared/snackbar/useSnackbar';
 
 interface RobotDestinationActionProps {
   robotId: string;
