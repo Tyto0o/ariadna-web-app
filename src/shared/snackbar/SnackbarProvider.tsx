@@ -1,15 +1,10 @@
-import { Alert, type AlertColor, Snackbar } from '@mui/material';
+import { Alert, Snackbar } from '@mui/material';
+import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
-
-export type SnackbarType = AlertColor;
-export type SnackbarDuration = number | null;
+  SnackbarContext,
+  type SnackbarDuration,
+  type SnackbarType,
+} from './snackbarContext';
 
 type SnackbarState = {
   open: boolean;
@@ -17,16 +12,6 @@ type SnackbarState = {
   type: SnackbarType;
   duration: SnackbarDuration;
 };
-
-type SnackbarContextValue = {
-  showSnackbar: (
-    message: string,
-    type?: SnackbarType,
-    duration?: SnackbarDuration
-  ) => void;
-};
-
-const SnackbarContext = createContext<SnackbarContextValue | null>(null);
 
 const INITIAL_STATE: SnackbarState = {
   open: false,
@@ -88,14 +73,4 @@ export function SnackbarProvider({ children }: { children: ReactNode }) {
       </Snackbar>
     </SnackbarContext.Provider>
   );
-}
-
-export function useSnackbar() {
-  const context = useContext(SnackbarContext);
-
-  if (!context) {
-    throw new Error('useSnackbar must be used within a SnackbarProvider');
-  }
-
-  return context;
 }

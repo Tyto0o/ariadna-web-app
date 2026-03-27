@@ -12,7 +12,7 @@ import { selectRobot } from '../../entities/slices/robotsSlice';
 import { pathApi } from '../../entities/api/pathApi';
 import { simulationApi } from '../../entities/api/simulationApi';
 import { Position } from '../../entities/types/entities.types';
-import { useSnackbar } from '../../../shared/snackbar/SnackbarProvider';
+import { useSnackbar } from '../../../shared/snackbar/useSnackbar';
 
 interface UseSceneControllerResult {
   containerRef: RefObject<HTMLDivElement | null>;
@@ -105,7 +105,7 @@ export const useSceneController = (): UseSceneControllerResult => {
       sceneRuntimeRef.current?.dispose();
       sceneRuntimeRef.current = null;
     };
-  }, [dispatch]);
+  }, [dispatch, showSnackbar]);
 
   useEffect(() => {
     sceneRuntimeRef.current?.syncRobots(robots);
