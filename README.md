@@ -2,6 +2,18 @@
 
 The Ariadna 3D Frontend is the interactive visualization interface of the system. It provides real-time 3D rendering of warehouse environments, robot positioning, and control dashboard for monitoring autonomous fleet operations.
 
+## 🔗 Project Scope
+
+This repository contains the frontend part of the Ariadna project.
+
+Backend repository:
+[Ariadna Backend](https://github.com/Tyto0o/ariadna-backend)
+
+Application demo video:
+[Watch on YouTube](https://youtu.be/2recnEP32AI)
+
+[![Ariadna App Demo](https://img.youtube.com/vi/2recnEP32AI/hqdefault.jpg)](https://youtu.be/2recnEP32AI)
+
 ## 🎯 Key Features
 
 - **3D Warehouse Visualization**: Real-time rendering of warehouse layouts using Three.js with interactive camera controls.
