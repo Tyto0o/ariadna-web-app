@@ -13,10 +13,20 @@ import { pathApi } from '../../entities/api/pathApi';
 import { simulationApi } from '../../entities/api/simulationApi';
 import { Position } from '../../entities/types/entities.types';
 import { useSnackbar } from '../../../shared/snackbar/useSnackbar';
+import { CAMERA_DEFAULT_POSITION, DEFAULT_CAMERA_TARGET } from '../constants';
 
 interface UseSceneControllerResult {
   containerRef: RefObject<HTMLDivElement | null>;
   robotPathLoading: boolean;
+  setView: (
+    x: number,
+    y: number,
+    z: number,
+    lookAtX?: number,
+    lookAtY?: number,
+    lookAtZ?: number
+  ) => void;
+  resetCameraView: () => void;
   startTargetSelectionForRobot: (robotId: string) => void;
 }
 
@@ -129,9 +139,44 @@ export const useSceneController = (): UseSceneControllerResult => {
     setTargetSelectionMode(true);
   };
 
+  const setView = (
+    x: number,
+    y: number,
+    z: number,
+    lookAtX: number = DEFAULT_CAMERA_TARGET.x,
+    lookAtY: number = DEFAULT_CAMERA_TARGET.y,
+    lookAtZ: number = DEFAULT_CAMERA_TARGET.z
+  ): void => {
+    sceneRuntimeRef.current?.setCameraView({
+      position: { x, y, z },
+      lookAt: {
+        x: lookAtX,
+        y: lookAtY,
+        z: lookAtZ,
+      },
+    });
+  };
+
+  const resetCameraView = (): void => {
+    targetSelectionModeRef.current = false;
+    setTargetSelectionMode(false);
+    sceneRuntimeRef.current?.setTargetPreviewEnabled(false);
+
+    setView(
+      CAMERA_DEFAULT_POSITION.x,
+      CAMERA_DEFAULT_POSITION.y,
+      CAMERA_DEFAULT_POSITION.z,
+      DEFAULT_CAMERA_TARGET.x,
+      DEFAULT_CAMERA_TARGET.y,
+      DEFAULT_CAMERA_TARGET.z
+    );
+  };
+
   return {
     containerRef,
     robotPathLoading,
+    setView,
+    resetCameraView,
     startTargetSelectionForRobot,
   };
 };
