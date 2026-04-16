@@ -6,8 +6,12 @@ import { useSceneController } from './features/scene/hooks/useSceneController';
 function App() {
   useRobotPositionUpdates();
 
-  const { containerRef, robotPathLoading, startTargetSelectionForRobot } =
-    useSceneController();
+  const {
+    containerRef,
+    robotPathLoading,
+    startTargetSelectionForRobot,
+    resetCameraView,
+  } = useSceneController();
 
   return (
     <Box sx={{ display: 'flex', width: '100vw', height: '100vh' }}>
@@ -16,6 +20,7 @@ function App() {
         <UserPanel
           robotPathLoading={robotPathLoading}
           onStartTargetSelectionForRobot={startTargetSelectionForRobot}
+          onResetCameraView={resetCameraView}
         />
       </Box>
     </Box>

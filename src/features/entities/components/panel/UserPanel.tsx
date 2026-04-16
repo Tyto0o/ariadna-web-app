@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import Stack from '@mui/material/Stack';
@@ -6,6 +7,7 @@ import CategoryIcon from '@mui/icons-material/Category';
 import { useTheme } from '@mui/material/styles';
 import { useEntityCrudActions } from '../../hooks/useEntityCrudActions';
 import { useEntityPanelState } from '../../hooks/useEntityPanelState';
+import { CameraResetAction } from '../actions/CameraResetAction';
 import { EntityDeleteAction } from '../actions/EntityDeleteAction';
 import { RobotDestinationAction } from '../actions/RobotDestinationAction';
 import { EntityEditMenu } from '../menu/EntityEditMenu';
@@ -13,11 +15,13 @@ import { EntitySection } from './EntitySection';
 
 interface UserPanelProps {
   robotPathLoading: boolean;
+  onResetCameraView: () => void;
   onStartTargetSelectionForRobot: (robotId: string) => void;
 }
 
 export const UserPanel = ({
   robotPathLoading,
+  onResetCameraView,
   onStartTargetSelectionForRobot,
 }: UserPanelProps) => {
   const theme = useTheme();
@@ -59,7 +63,29 @@ export const UserPanel = ({
           letterSpacing: '0.5px',
         }}
       >
-        User Panel
+        <Box
+          sx={{
+            position: 'relative',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Box component="span">User Panel</Box>
+          <Box
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+          >
+            <CameraResetAction
+              disabled={robotPathLoading}
+              onResetCameraView={onResetCameraView}
+            />
+          </Box>
+        </Box>
       </ListSubheader>
 
       <EntitySection

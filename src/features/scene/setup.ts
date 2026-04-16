@@ -22,17 +22,23 @@ import { Obstacle, Robot } from '../entities/types/entities.types';
 import { createSceneEntities } from './entities';
 import { createTargetCrosshairController } from './crosshair';
 import { createScenePath } from './path';
-import { createCamera } from './camera';
+import { createCamera, setCameraTransform } from './camera';
 import { createTargetSelectionCameraController } from './targetSelectionCamera';
 
 interface SceneEventHandlers {
   onGroundClick?: (position: { x: number; y: number }) => void;
 }
 
+interface CameraView {
+  position: { x: number; y: number; z: number };
+  lookAt: { x: number; y: number; z: number };
+}
+
 interface SceneRuntime {
   syncRobots: (robots: Robot[]) => void;
   syncObstacles: (obstacles: Obstacle[]) => void;
   syncPath: (path: { x: number; y: number }[]) => void;
+  setCameraView: (view: CameraView) => void;
   setTargetPreviewEnabled: (enabled: boolean) => void;
   dispose: () => void;
 }
@@ -179,6 +185,16 @@ export const initScene = (
     scenePath.syncPath(path);
   };
 
+  const setCameraView = (view: CameraView): void => {
+    setCameraTransform(camera, {
+      position: view.position,
+      lookAt: view.lookAt,
+    });
+
+    controls.target.set(view.lookAt.x, view.lookAt.y, view.lookAt.z);
+    controls.update();
+  };
+
   const handleClick = (event: MouseEvent): void => {
     if (event.button !== 0 || !eventHandlers?.onGroundClick) {
       return;
@@ -221,6 +237,7 @@ export const initScene = (
     syncRobots,
     syncObstacles,
     syncPath,
+    setCameraView,
     setTargetPreviewEnabled,
     dispose,
   };
