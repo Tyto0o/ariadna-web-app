@@ -4,6 +4,7 @@ declare module '@mui/material/styles' {
   interface TypeBackground {
     light: string;
     darker: string;
+    hover: string;
   }
 
   interface Palette {
@@ -39,6 +40,7 @@ export const colors = {
     paper: '#1a1a1a',
     light: '#121212',
     darker: '#0d0d0d',
+    hover: '#424141',
   },
   text: {
     primary: '#ffffff',
