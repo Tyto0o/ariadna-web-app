@@ -171,6 +171,12 @@ export const initScene = (
     renderer.setSize(container.clientWidth, container.clientHeight);
   };
 
+  const resizeObserver = new ResizeObserver(() => {
+    handleResize();
+  });
+
+  resizeObserver.observe(container);
+
   window.addEventListener('resize', handleResize);
 
   const syncRobots = (robots: Robot[]): void => {
@@ -224,6 +230,7 @@ export const initScene = (
     scenePath.dispose();
     targetCrosshair.dispose();
     window.removeEventListener('resize', handleResize);
+    resizeObserver.disconnect();
     renderer.domElement.removeEventListener('click', handleClick);
     cancelAnimationFrame(animationId);
     controls.dispose();
