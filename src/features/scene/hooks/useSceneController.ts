@@ -30,6 +30,20 @@ interface UseSceneControllerResult {
   startTargetSelectionForRobot: (robotId: string) => void;
 }
 
+const PATH_COMPLETION_DISTANCE_THRESHOLD = 0.1; // This is a threshold distance to consider the robot has reached the destination, adjust as needed
+
+const hasReachedPathDestination = (
+  currentPosition: Position,
+  destination: Position
+): boolean => {
+  return (
+    Math.hypot(
+      currentPosition.x - destination.x,
+      currentPosition.y - destination.y
+    ) <= PATH_COMPLETION_DISTANCE_THRESHOLD
+  );
+};
+
 export const useSceneController = (): UseSceneControllerResult => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRuntimeRef = useRef<ReturnType<typeof initScene> | null>(null);
@@ -42,12 +56,14 @@ export const useSceneController = (): UseSceneControllerResult => {
 
   const [targetSelectionMode, setTargetSelectionMode] = useState(false);
   const [robotPath, setRobotPath] = useState<Position[]>([]);
+  const [pathRobotId, setPathRobotId] = useState<string | null>(null);
   const [robotPathLoading, setRobotPathLoading] = useState(false);
   const { showSnackbar } = useSnackbar();
 
   useEffect(() => {
     selectedRobotIdRef.current = selectedRobotId;
     setRobotPath([]);
+    setPathRobotId(null);
   }, [selectedRobotId]);
 
   useEffect(() => {
@@ -89,6 +105,7 @@ export const useSceneController = (): UseSceneControllerResult => {
           });
 
           setRobotPath(response.path);
+          setPathRobotId(currentRobotId);
 
           await simulationApi.startSimulation({
             robotId: currentRobotId,
@@ -101,6 +118,7 @@ export const useSceneController = (): UseSceneControllerResult => {
           );
         } catch {
           setRobotPath([]);
+          setPathRobotId(null);
           showSnackbar(
             'Failed to generate robot path or start simulation',
             'error'
@@ -128,6 +146,27 @@ export const useSceneController = (): UseSceneControllerResult => {
   useEffect(() => {
     sceneRuntimeRef.current?.syncPath(robotPath);
   }, [robotPath]);
+
+  useEffect(() => {
+    if (!pathRobotId || robotPath.length === 0) {
+      return;
+    }
+
+    const robot = robots.find((item) => item._id === pathRobotId);
+    if (!robot) {
+      return;
+    }
+
+    const destination = robotPath[robotPath.length - 1];
+    if (!destination) {
+      return;
+    }
+
+    if (hasReachedPathDestination(robot.position, destination)) {
+      setRobotPath([]);
+      setPathRobotId(null);
+    }
+  }, [pathRobotId, robotPath, robots]);
 
   const startTargetSelectionForRobot = (robotId: string): void => {
     if (!robotId) {
